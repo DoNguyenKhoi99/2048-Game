@@ -24,58 +24,76 @@ cc.Class({
     },
 
     initObj() {
-        this.createCell();
-        this.createBlock();
+        this.initCell();
+        this.initBlock(2);
     },
 
-    createCell() {
+    initCell() {
         let y = this.mainGame.height / 2 - GAME_CONFIG.MARGIN;
         let x = this.mainGame.width / -2 + GAME_CONFIG.MARGIN;
         for(let row = 0; row < GAME_CONFIG.ROW; row++) {
             this._arrBlockPos[row] = [];
             for(let col = 0; col < GAME_CONFIG.COL; col++) {
-                this._arrBlockPos[row][col] = {x, y}; //SEVE POSITION VALUE
-                this._cell = cc.instantiate(this.cell); //CREATE PREAFAB CELL
-                this._cell.setParent(this.mainGame);
-                this._cell.setPosition(cc.v2(x, y));
-                x += this._cell.width + GAME_CONFIG.MARGIN;
+                this._arrBlockPos[row][col] = {x, y, status: false}; //ADD POSITION VALUE
+                this.newCell = cc.instantiate(this.cell); //CREATE PREAFAB CELL
+                this.newCell.setParent(this.mainGame);
+                this.newCell.setPosition(cc.v2(x, y));
+                x += this.newCell.width + GAME_CONFIG.MARGIN;
             }
-            y -= this._cell.height + GAME_CONFIG.MARGIN;
+            y -= this.newCell.height + GAME_CONFIG.MARGIN;
             x = this.mainGame.width / -2 + GAME_CONFIG.MARGIN;
         };
     },
-
-    createBlock() {
-        for(let row = 0; row < GAME_CONFIG.ROW; row++) {
-            for(let col = 0; col < GAME_CONFIG.COL; col++) {
-                let arrBlockPos = this._arrBlockPos[row][col];
-                if(!arrBlockPos.status) {
-                    this._block = cc.instantiate(this.block);
-                    this._block.setParent(this.mainGame);
-                    this._block.setPosition(arrBlockPos.x, arrBlockPos.y);
-                };   
+    
+    initBlock(value) {
+        for(let i = 0; i < value; i++) {
+            let arrPos = this._arrBlockPos[this.getRandomInt(0, 3)][this.getRandomInt(0, 3)];
+            if(!arrPos.status) {
+                this.newBlock = cc.instantiate(this.block);
+                this.newBlock.setParent(this.mainGame);
+                this.newBlock.setPosition(cc.v2(arrPos.x, arrPos.y));
+                arrPos.status = true;
+            } else {
+                this.initBlock(1);
             }
-        };
+        }
     },
 
     onKeyDown(event) {
         switch(event.keyCode) {
             case cc.macro.KEY.left:
             case cc.macro.KEY.right:
-                this.checkRow();
+                this.checkRow(event.keyCode);
                 break;
             case cc.macro.KEY.up:
             case cc.macro.KEY.down:
-                this.checkCol();               
+                this.checkCol(event.keyCode);               
                 break;
         };
     },
 
-    checkRow() {
-        cc.error("cc");
+    checkRow(value) {
+        for(let row = 0; row < GAME_CONFIG.ROW; row++) {
+            for(let col = 0; col < GAME_CONFIG.COL; col++) {
+                if(this._arrBlockPos[row][col] == this._arrBlockPos[row][col++]) {
+                    
+                };
+            }
+        }
     },
 
-    checkCol() {
-        cc.error("cc");
+    checkCol(value) {
+        for(let row = 0; row < GAME_CONFIG.ROW; row++) {
+            
+            for(let col = 0; col < GAME_CONFIG.COL; col++) {
+                cc.error(this._arrBlockPos[col][row]);
+            }
+        }
     },
+
+    getRandomInt(min, max) {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }, 
 });
