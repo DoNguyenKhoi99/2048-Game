@@ -49,25 +49,12 @@ cc.Class({
                 if(ARR_BLOCK[row][col] != 0) {
                     let label = this.newBlock.getChildByName("Value")
                     label.getComponent(cc.Label).string = ARR_BLOCK[row][col];
+                    this.newBlock.getComponent("BlockController").setColor();
                 }
             }
             y -= this.newBlock.height + GAME_CONFIG.MARGIN;
             x = this.mainGame.width / -2 + GAME_CONFIG.MARGIN;
         };
-    },
-
-    onKeyDown(event) {
-        this._isChange = false;
-        switch(event.keyCode) {
-            case 37:
-            case 39:
-                this.checkLeftRight(event.keyCode);  
-                break;
-            case 38: 
-            case 40:
-                this.checkUpDown(event.keyCode);
-                break;
-        }
     },
 
     slideLeftOrUp(array) {
@@ -117,11 +104,16 @@ cc.Class({
         }
     },
 
-    checkLeftRight(keyCode) {
+    checkLeft() {
         for(let row = 0; row < GAME_CONFIG.ROW; row++) {
             let arr = ARR_BLOCK[row];
             ARR_BLOCK[row] = this.slideLeftOrUp(ARR_BLOCK[row]);
-            keyCode == 37 ? this.forLeft(row) : this.forRight(row);
+            for(let col = 0; col < GAME_CONFIG.COL - 1; col++) {
+                if(ARR_BLOCK[row][col] == ARR_BLOCK[row][col + 1]) {
+                    ARR_BLOCK[row][col] += ARR_BLOCK[row][col + 1];
+                    ARR_BLOCK[row][col + 1] = 0;
+                }
+            }
             ARR_BLOCK[row] = this.slideLeftOrUp(ARR_BLOCK[row]);
             this.hasChangeArray(arr, ARR_BLOCK[row]);
         }
@@ -131,7 +123,26 @@ cc.Class({
         this.initBlock();
     },
 
-    checkUpDown(keyCode) {
+    checkRight() {
+        for(let row = 0; row < GAME_CONFIG.ROW; row++) {
+            let arr = ARR_BLOCK[row];
+            ARR_BLOCK[row] = this.slideRightOrDown(ARR_BLOCK[row]);
+            for(let col = 3; col > 0; col--) {
+                if(ARR_BLOCK[row][col] == ARR_BLOCK[row][col - 1]) {
+                    ARR_BLOCK[row][col] += ARR_BLOCK[row][col - 1];
+                    ARR_BLOCK[row][col - 1] = 0;
+                }
+            }
+            ARR_BLOCK[row] = this.slideRightOrDown(ARR_BLOCK[row]);
+            this.hasChangeArray(arr, ARR_BLOCK[row]);
+        }
+        if(this._isChange) {
+            this.addNum();
+        }
+        this.initBlock();
+    },
+
+    checkUp() {
         for(let row = 0; row < GAME_CONFIG.ROW; row++) {
             let newArr = [];
             for(let col = 0; col < GAME_CONFIG.COL; col++) {
@@ -139,7 +150,12 @@ cc.Class({
             }
             let arr  = newArr;
             newArr = this.slideLeftOrUp(newArr);
-            keyCode == 38 ? this.forUp(newArr) : this.forDown(newArr);
+            for(let m = 0; m < 3; m++) {
+                if(newArr[m] == newArr[m + 1]) {
+                    newArr[m] += newArr[m + 1];
+                    newArr[m + 1] = 0;
+                }
+            }
             newArr = this.slideLeftOrUp(newArr);
             for(let i = 0; i < 4; i++) {
                 ARR_BLOCK[i][row] = newArr[i];
@@ -152,39 +168,46 @@ cc.Class({
         this.initBlock();
     },
 
-    forUp(newArr) {
-        for(let m = 0; m < 3; m++) {
-            if(newArr[m] == newArr[m + 1]) {
-                newArr[m] += newArr[m + 1];
-                newArr[m + 1] = 0;
+    checkDown() {
+        for(let row = 0; row < GAME_CONFIG.ROW; row++) {
+            let newArr = [];
+            for(let col = 0; col < GAME_CONFIG.COL; col++) {
+                newArr.push(ARR_BLOCK[col][row]);
             }
+            let arr  = newArr;
+            newArr = this.slideRightOrDown(newArr);
+            for(let m = 3; m > 0; m--) {
+                if(newArr[m] == newArr[m - 1]) {
+                    newArr[m] += newArr[m - 1];
+                    newArr[m - 1] = 0;
+                }
+            }
+            newArr = this.slideRightOrDown(newArr);
+            for(let i = 0; i < 4; i++) {
+                ARR_BLOCK[i][row] = newArr[i];
+            }
+            this.hasChangeArray(arr, newArr);
         }
+        if(this._isChange) {
+            this.addNum();
+        }
+        this.initBlock();
     },
 
-    forDown(newArr) {
-        for(let m = 3; m > 0; m--) {
-            if(newArr[m] == newArr[m - 1]) {
-                newArr[m] += newArr[m - 1];
-                newArr[m - 1] = 0;
-            }
+    onKeyDown(event) {
+        this._isChange = false;
+        switch(event.keyCode) {
+            case 37:
+                this.checkLeft();  
+                break;
+            case 39:
+                this.checkRight();
+                break;
+            case 38: 
+                this.checkUp();
+                break;
+            case 40:
+                this.checkDown();
         }
     },
-
-    forLeft(row) {
-        for(let col = 0; col < 3; col++) {
-            if(ARR_BLOCK[row][col] == ARR_BLOCK[row][col + 1]) {
-                ARR_BLOCK[row][col] += ARR_BLOCK[row][col + 1];
-                ARR_BLOCK[row][col + 1] = 0;
-            }
-        }
-    },
-
-    forRight(row) {
-        for(let col = 3; col > 0; col--) {
-            if(ARR_BLOCK[row][col] == ARR_BLOCK[row][col - 1]) {
-                ARR_BLOCK[row][col] += ARR_BLOCK[row][col - 1];
-                ARR_BLOCK[row][col - 1] = 0;
-            }
-        }
-    }
 });
