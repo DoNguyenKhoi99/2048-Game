@@ -15,6 +15,7 @@ cc.Class({
         recored: cc.Label,
         loseLayout: cc.Node, 
         _arrBlockPos: [],
+        _arrBlock: []
     },
 
     onLoad() {
@@ -29,12 +30,13 @@ cc.Class({
     },
 
     initCell() {
-        let y = this.mainGame.height / 2 - GAME_CONFIG.MARGIN;
-        let x = this.mainGame.width / -2 + GAME_CONFIG.MARGIN;
+        let y = this.mainGame.height / 2 - GAME_CONFIG.MARGIN,
+            x = this.mainGame.width / -2 + GAME_CONFIG.MARGIN;
+        let index = 0;    
         for(let row = 0; row < GAME_CONFIG.ROW; row++) {
             this._arrBlockPos[row] = [];
             for(let col = 0; col < GAME_CONFIG.COL; col++) {
-                this._arrBlockPos[row][col] = {x, y, status: false}; //ADD POSITION VALUE
+                this._arrBlockPos[row][col] = {x, y, status: false, index: index++}; //ADD POSITION VALUE
                 this.newCell = cc.instantiate(this.cell); //CREATE PREAFAB CELL
                 this.newCell.setParent(this.mainGame);
                 this.newCell.setPosition(cc.v2(x, y));
@@ -45,18 +47,20 @@ cc.Class({
         };
     },
     
-    initBlock(value) {
-        for(let i = 0; i < value; i++) {
+    initBlock(loop) {
+        for(let i = 0; i < loop; i++) {
             let arrPos = this._arrBlockPos[this.getRandomInt(0, 3)][this.getRandomInt(0, 3)];
             if(!arrPos.status) {
-                this.newBlock = cc.instantiate(this.block);
-                this.newBlock.setParent(this.mainGame);
-                this.newBlock.setPosition(cc.v2(arrPos.x, arrPos.y));
+                let newBlock = cc.instantiate(this.block);
+                newBlock.setParent(this.mainGame);
+                newBlock.setPosition(cc.v2(arrPos.x, arrPos.y));
                 arrPos.status = true;
+                this._arrBlock.push({block: newBlock, index: arrPos.index});
             } else {
                 this.initBlock(1);
             }
         }
+        cc.error(this._arrBlock);
     },
 
     onKeyDown(event) {
@@ -75,16 +79,13 @@ cc.Class({
     checkRow(value) {
         for(let row = 0; row < GAME_CONFIG.ROW; row++) {
             for(let col = 0; col < GAME_CONFIG.COL; col++) {
-                if(this._arrBlockPos[row][col] == this._arrBlockPos[row][col++]) {
-                    
-                };
+                
             }
         }
     },
 
     checkCol(value) {
         for(let row = 0; row < GAME_CONFIG.ROW; row++) {
-            
             for(let col = 0; col < GAME_CONFIG.COL; col++) {
                 cc.error(this._arrBlockPos[col][row]);
             }

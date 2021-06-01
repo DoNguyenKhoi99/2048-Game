@@ -156,7 +156,7 @@
       "__type__": "cc.Vec3",
       "x": 0,
       "y": 0,
-      "z": 418.2902700278839
+      "z": 420.8883462392372
     },
     "_scale": {
       "__type__": "cc.Vec3",
@@ -1126,7 +1126,7 @@
       "__id__": 25
     },
     "_arrBlockPos": [],
-    "_arrFalse": [],
+    "_arrBlock": [],
     "_id": "a0gETN2uNEr4BB1NPa8GPv"
   },
   {
