@@ -5,11 +5,9 @@ const GAME_CONFIG = {
     MARGIN: 16 //results from: (this.mainGame.width - this.block.width * GAME_CONFIG.ROW) / 5;
 };
 
-const ARR_BLOCK = [
-    [0, 0, 0, 0],
-    [0, 0, 0, 0],
-    [0, 0, 0, 0],
-    [0, 0, 0, 0],
+let ARR_BLOCK = [
+    [0, 0, 0, 0], [0, 0, 0, 0],
+    [0, 0, 0, 0], [0, 0, 0, 0],
 ];
 
 cc.Class({
@@ -20,25 +18,28 @@ cc.Class({
         block: cc.Prefab,
         score: cc.Label,
         recored: cc.Label,
-        loseLayout: cc.Node, 
         winGame: cc.Node,
         loseGame: cc.Node,
-        _isChange: false
+        _isChange: false,
     },
 
     onLoad() {
         cc.systemEvent.on(cc.SystemEvent.EventType.KEY_DOWN, this.onKeyDown, this);
         this.initObj();
-        this.score.node.string = 0;
     },
 
     initObj() {
+        this.loseGame.active = false;
+        this.winGame.active = false;
+        this._showWinLose = false;
+        this.score.string = 0; 
         this.initBlock();
         this.addNum();
         this.addNum();
     },
 
     initBlock() {
+        this.mainGame.removeAllChildren();
         let y = this.mainGame.height / 2 - GAME_CONFIG.MARGIN,
             x = this.mainGame.width / -2 + GAME_CONFIG.MARGIN;
         for(let row = 0; row < GAME_CONFIG.ROW; row++) {
@@ -48,7 +49,7 @@ cc.Class({
                 this.newBlock.setPosition(cc.v2(x, y));
                 x += this.newBlock.width + GAME_CONFIG.MARGIN;
                 if(ARR_BLOCK[row][col] != 0) {
-                    let label = this.newBlock.getChildByName("Value")
+                    let label = this.newBlock.getChildByName("Value");
                     label.getComponent(cc.Label).string = ARR_BLOCK[row][col];
                     this.newBlock.getComponent("BlockController").setColor();
                 }
@@ -56,6 +57,19 @@ cc.Class({
             y -= this.newBlock.height + GAME_CONFIG.MARGIN;
             x = this.mainGame.width / -2 + GAME_CONFIG.MARGIN;
         };
+    },
+
+    onKeyDown(event) {
+        this._isChange = false;
+        switch(event.keyCode) {
+            case 37:
+            case 39:
+                this.checkLeftRight(event.keyCode);  
+                break;
+            case 38: 
+            case 40:
+                this.checkUpDown(event.keyCode);
+        }
     },
 
     slideLeftOrUp(array) {
@@ -106,11 +120,16 @@ cc.Class({
         }
     },
 
+    checkLose() {
+        
+    }, 
+
     checkWin() {
         for(let row = 0; row < GAME_CONFIG.ROW; row++) {
             for(let col =0; col < GAME_CONFIG.COL; col++) {
                 if(ARR_BLOCK[row][col] === 2048) {
                     this.winGame.active = true;
+                    return;
                 }
             }
         }
@@ -129,60 +148,68 @@ cc.Class({
     },
 
     clickRestart() {
-
+        ARR_BLOCK = [[0,0,0,0], [0,0,0,0],
+                     [0,0,0,0], [0,0,0,0]];
+        this.initObj();
     },
 
-    checkLeft() {
+    checkLeftRight(keyCode) {
         for(let row = 0; row < GAME_CONFIG.ROW; row++) {
             let arr = ARR_BLOCK[row];
-            ARR_BLOCK[row] = this.slideLeftOrUp(ARR_BLOCK[row]);
-            for(let col = 0; col < GAME_CONFIG.COL - 1; col++) {
-                if(ARR_BLOCK[row][col] == ARR_BLOCK[row][col + 1]) {
-                    ARR_BLOCK[row][col] += ARR_BLOCK[row][col + 1];
-                    ARR_BLOCK[row][col + 1] = 0;
+            if(keyCode === 37) {
+                ARR_BLOCK[row] = this.slideLeftOrUp(ARR_BLOCK[row]);
+                for(let col = 0; col < GAME_CONFIG.COL - 1; col++) {
+                    if(ARR_BLOCK[row][col] == ARR_BLOCK[row][col + 1]) {
+                        ARR_BLOCK[row][col] += ARR_BLOCK[row][col + 1];
+                        ARR_BLOCK[row][col + 1] = 0;
+                    }
                 }
+                ARR_BLOCK[row] = this.slideLeftOrUp(ARR_BLOCK[row]);
             }
-            ARR_BLOCK[row] = this.slideLeftOrUp(ARR_BLOCK[row]);
+            if(keyCode === 39) {
+                ARR_BLOCK[row] = this.slideRightOrDown(ARR_BLOCK[row]);
+                for(let col = 3; col > 0; col--) {
+                    if(ARR_BLOCK[row][col] == ARR_BLOCK[row][col - 1]) {
+                        ARR_BLOCK[row][col] += ARR_BLOCK[row][col - 1];
+                        ARR_BLOCK[row][col - 1] = 0;
+                    }
+                }
+                ARR_BLOCK[row] = this.slideRightOrDown(ARR_BLOCK[row]);
+            }
             this.hasChangeArray(arr, ARR_BLOCK[row]);
         }
         if(this._isChange) {
             this.addNum();
         }
     },
-
-    checkRight() {
-        for(let row = 0; row < GAME_CONFIG.ROW; row++) {
-            let arr = ARR_BLOCK[row];
-            ARR_BLOCK[row] = this.slideRightOrDown(ARR_BLOCK[row]);
-            for(let col = 3; col > 0; col--) {
-                if(ARR_BLOCK[row][col] == ARR_BLOCK[row][col - 1]) {
-                    ARR_BLOCK[row][col] += ARR_BLOCK[row][col - 1];
-                    ARR_BLOCK[row][col - 1] = 0;
-                }
-            }
-            ARR_BLOCK[row] = this.slideRightOrDown(ARR_BLOCK[row]);
-            this.hasChangeArray(arr, ARR_BLOCK[row]);
-        }
-        if(this._isChange) {
-            this.addNum();
-        }
-    },
-
-    checkUp() {
+    
+    checkUpDown(keyCode) {
         for(let row = 0; row < GAME_CONFIG.ROW; row++) {
             let newArr = [];
             for(let col = 0; col < GAME_CONFIG.COL; col++) {
                 newArr.push(ARR_BLOCK[col][row]);    
             }
             let arr  = newArr;
-            newArr = this.slideLeftOrUp(newArr);
-            for(let m = 0; m < 3; m++) {
-                if(newArr[m] == newArr[m + 1]) {
-                    newArr[m] += newArr[m + 1];
-                    newArr[m + 1] = 0;
+            if(keyCode === 38) {
+                newArr = this.slideLeftOrUp(newArr);
+                for(let m = 0; m < 3; m++) {
+                    if(newArr[m] == newArr[m + 1]) {
+                        newArr[m] += newArr[m + 1];
+                        newArr[m + 1] = 0;
+                    }
                 }
+                newArr = this.slideLeftOrUp(newArr);
             }
-            newArr = this.slideLeftOrUp(newArr);
+            if(keyCode === 40) {
+                newArr = this.slideRightOrDown(newArr);
+                for(let m = 3; m > 0; m--) {
+                    if(newArr[m] == newArr[m - 1]) {
+                        newArr[m] += newArr[m - 1];
+                        newArr[m - 1] = 0;
+                    }
+                }
+                newArr = this.slideRightOrDown(newArr);
+            }
             for(let i = 0; i < 4; i++) {
                 ARR_BLOCK[i][row] = newArr[i];
             }
@@ -190,52 +217,11 @@ cc.Class({
         }
         if(this._isChange) {
             this.addNum();
-        }
-    },
-
-    checkDown() {
-        for(let row = 0; row < GAME_CONFIG.ROW; row++) {
-            let newArr = [];
-            for(let col = 0; col < GAME_CONFIG.COL; col++) {
-                newArr.push(ARR_BLOCK[col][row]);
-            }
-            let arr  = newArr;
-            newArr = this.slideRightOrDown(newArr);
-            for(let m = 3; m > 0; m--) {
-                if(newArr[m] == newArr[m - 1]) {
-                    newArr[m] += newArr[m - 1];
-                    newArr[m - 1] = 0;
-                }
-            }
-            newArr = this.slideRightOrDown(newArr);
-            for(let i = 0; i < 4; i++) {
-                ARR_BLOCK[i][row] = newArr[i];
-            }
-            this.hasChangeArray(arr, newArr);
-        }
-        if(this._isChange) {
-            this.addNum();
-        }
-    },
-
-    onKeyDown(event) {
-        this._isChange = false;
-        switch(event.keyCode) {
-            case 37:
-                this.checkLeft();  
-                break;
-            case 39:
-                this.checkRight();
-                break;
-            case 38: 
-                this.checkUp();
-                break;
-            case 40:
-                this.checkDown();
         }
     },
 
     update() {
         this.checkWin();
+        this.checkLose();
     },
 });

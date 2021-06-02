@@ -65,10 +65,10 @@
         "__id__": 5
       },
       {
-        "__id__": 25
+        "__id__": 35
       },
       {
-        "__id__": 35
+        "__id__": 25
       }
     ],
     "_active": true,
@@ -1122,21 +1122,18 @@
     "recored": {
       "__id__": 20
     },
-    "loseLayout": {
-      "__id__": 25
-    },
     "winGame": {
-      "__id__": 35
+      "__id__": 25
     },
     "loseGame": {
-      "__id__": 25
+      "__id__": 35
     },
     "_isChange": false,
     "_id": "a0gETN2uNEr4BB1NPa8GPv"
   },
   {
     "__type__": "cc.Node",
-    "_name": "LoseLayout",
+    "_name": "WinLayout",
     "_objFlags": 0,
     "_parent": {
       "__id__": 2
@@ -1196,7 +1193,7 @@
     "_skewY": 0,
     "_is3DNode": false,
     "groupIndex": 0,
-    "_id": "17aIOtr0xJD7MtmVV7ZVYG"
+    "_id": "207AEKM6lHgJ6UD1UcNuCK"
   },
   {
     "__type__": "cc.Node",
@@ -1257,7 +1254,7 @@
     "_skewY": 0,
     "_is3DNode": false,
     "groupIndex": 0,
-    "_id": "afF5BoNWVCdoXkiAGGXzyA"
+    "_id": "dcq5SQLrBOpa9IYsdi5Eb3"
   },
   {
     "__type__": "cc.Sprite",
@@ -1289,7 +1286,7 @@
     "_fillRange": 0,
     "_isTrimmedMode": true,
     "_atlas": null,
-    "_id": "d5d3XGc+FKhJYe4Hmcw5F7"
+    "_id": "84SCxEIGdKWLOZTzh+Xmbx"
   },
   {
     "__type__": "cc.BlockInputEvents",
@@ -1299,7 +1296,7 @@
       "__id__": 26
     },
     "_enabled": true,
-    "_id": "a3WdmXGodAY5mqv8RlZPLs"
+    "_id": "357e1OsOROHI6JQ3WUxAn/"
   },
   {
     "__type__": "cc.Node",
@@ -1327,7 +1324,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 198.69,
+      "width": 180.84,
       "height": 50.4
     },
     "_anchorPoint": {
@@ -1357,7 +1354,7 @@
     "_skewY": 0,
     "_is3DNode": false,
     "groupIndex": 0,
-    "_id": "66DjhJitZHP7M6H+7hzN9x"
+    "_id": "c0VtUsIL5K0K1EXIYAT42Y"
   },
   {
     "__type__": "cc.Label",
@@ -1373,8 +1370,8 @@
       }
     ],
     "_useOriginalSize": false,
-    "_string": "You Lose!!!",
-    "_N$string": "You Lose!!!",
+    "_string": "You Win!!!",
+    "_N$string": "You Win!!!",
     "_fontSize": 40,
     "_lineHeight": 40,
     "_enableWrapText": true,
@@ -1387,7 +1384,7 @@
     "_N$fontFamily": "Arial",
     "_N$overflow": 0,
     "_N$cacheMode": 0,
-    "_id": "e6vNe1zjhLZ7NVLVEBBR8S"
+    "_id": "afI6fiZ5lEhafPKlRAXf8s"
   },
   {
     "__type__": "cc.Node",
@@ -1448,7 +1445,7 @@
     "_skewY": 0,
     "_is3DNode": false,
     "groupIndex": 0,
-    "_id": "0e4aLnx4tJW5OHwMOFkhyU"
+    "_id": "2aP3yxsndF5aAn45CoDy9l"
   },
   {
     "__type__": "cc.Sprite",
@@ -1480,7 +1477,7 @@
     "_fillRange": 0,
     "_isTrimmedMode": true,
     "_atlas": null,
-    "_id": "c8SU+gypdMEJ3D94/xo80Q"
+    "_id": "49Pu8N4XxK9JPHGR7VWiep"
   },
   {
     "__type__": "cc.Button",
@@ -1549,8 +1546,10 @@
     "_N$hoverSprite": null,
     "hoverSprite": null,
     "_N$disabledSprite": null,
-    "_N$target": null,
-    "_id": "c7sMWCJrdAH7/ZIXoHGg1y"
+    "_N$target": {
+      "__id__": 31
+    },
+    "_id": "e14LN9dEtJT7hZPFP0duVW"
   },
   {
     "__type__": "cc.ClickEvent",
@@ -1559,12 +1558,12 @@
     },
     "component": "",
     "_componentId": "016acPX4gdMY7UAGkEsBhhU",
-    "handler": "",
+    "handler": "clickRestart",
     "customEventData": ""
   },
   {
     "__type__": "cc.Node",
-    "_name": "WinLayout",
+    "_name": "LoseLayout",
     "_objFlags": 0,
     "_parent": {
       "__id__": 2
@@ -1624,7 +1623,7 @@
     "_skewY": 0,
     "_is3DNode": false,
     "groupIndex": 0,
-    "_id": "207AEKM6lHgJ6UD1UcNuCK"
+    "_id": "17aIOtr0xJD7MtmVV7ZVYG"
   },
   {
     "__type__": "cc.Node",
@@ -1685,7 +1684,7 @@
     "_skewY": 0,
     "_is3DNode": false,
     "groupIndex": 0,
-    "_id": "dcq5SQLrBOpa9IYsdi5Eb3"
+    "_id": "afF5BoNWVCdoXkiAGGXzyA"
   },
   {
     "__type__": "cc.Sprite",
@@ -1717,7 +1716,7 @@
     "_fillRange": 0,
     "_isTrimmedMode": true,
     "_atlas": null,
-    "_id": "84SCxEIGdKWLOZTzh+Xmbx"
+    "_id": "d5d3XGc+FKhJYe4Hmcw5F7"
   },
   {
     "__type__": "cc.BlockInputEvents",
@@ -1727,7 +1726,7 @@
       "__id__": 36
     },
     "_enabled": true,
-    "_id": "357e1OsOROHI6JQ3WUxAn/"
+    "_id": "a3WdmXGodAY5mqv8RlZPLs"
   },
   {
     "__type__": "cc.Node",
@@ -1785,7 +1784,7 @@
     "_skewY": 0,
     "_is3DNode": false,
     "groupIndex": 0,
-    "_id": "c0VtUsIL5K0K1EXIYAT42Y"
+    "_id": "66DjhJitZHP7M6H+7hzN9x"
   },
   {
     "__type__": "cc.Label",
@@ -1801,8 +1800,8 @@
       }
     ],
     "_useOriginalSize": false,
-    "_string": "You Win!!!",
-    "_N$string": "You Win!!!",
+    "_string": "You Lose!!!",
+    "_N$string": "You Lose!!!",
     "_fontSize": 40,
     "_lineHeight": 40,
     "_enableWrapText": true,
@@ -1815,7 +1814,7 @@
     "_N$fontFamily": "Arial",
     "_N$overflow": 0,
     "_N$cacheMode": 0,
-    "_id": "afI6fiZ5lEhafPKlRAXf8s"
+    "_id": "e6vNe1zjhLZ7NVLVEBBR8S"
   },
   {
     "__type__": "cc.Node",
@@ -1876,7 +1875,7 @@
     "_skewY": 0,
     "_is3DNode": false,
     "groupIndex": 0,
-    "_id": "2aP3yxsndF5aAn45CoDy9l"
+    "_id": "0e4aLnx4tJW5OHwMOFkhyU"
   },
   {
     "__type__": "cc.Sprite",
@@ -1908,7 +1907,7 @@
     "_fillRange": 0,
     "_isTrimmedMode": true,
     "_atlas": null,
-    "_id": "49Pu8N4XxK9JPHGR7VWiep"
+    "_id": "c8SU+gypdMEJ3D94/xo80Q"
   },
   {
     "__type__": "cc.Button",
@@ -1977,8 +1976,10 @@
     "_N$hoverSprite": null,
     "hoverSprite": null,
     "_N$disabledSprite": null,
-    "_N$target": null,
-    "_id": "e14LN9dEtJT7hZPFP0duVW"
+    "_N$target": {
+      "__id__": 41
+    },
+    "_id": "c7sMWCJrdAH7/ZIXoHGg1y"
   },
   {
     "__type__": "cc.ClickEvent",
@@ -1987,7 +1988,7 @@
     },
     "component": "",
     "_componentId": "016acPX4gdMY7UAGkEsBhhU",
-    "handler": "",
+    "handler": "clickRestart",
     "customEventData": ""
   },
   {

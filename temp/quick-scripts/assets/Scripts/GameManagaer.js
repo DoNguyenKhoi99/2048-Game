@@ -20,7 +20,6 @@ cc.Class({
         block: cc.Prefab,
         score: cc.Label,
         recored: cc.Label,
-        loseLayout: cc.Node,
         winGame: cc.Node,
         loseGame: cc.Node,
         _isChange: false
@@ -29,14 +28,18 @@ cc.Class({
     onLoad: function onLoad() {
         cc.systemEvent.on(cc.SystemEvent.EventType.KEY_DOWN, this.onKeyDown, this);
         this.initObj();
-        this.score.node.string = 0;
     },
     initObj: function initObj() {
+        this.loseGame.active = false;
+        this.winGame.active = false;
+        this._showWinLose = false;
+        this.score.string = 0;
         this.initBlock();
         this.addNum();
         this.addNum();
     },
     initBlock: function initBlock() {
+        this.mainGame.removeAllChildren();
         var y = this.mainGame.height / 2 - GAME_CONFIG.MARGIN,
             x = this.mainGame.width / -2 + GAME_CONFIG.MARGIN;
         for (var row = 0; row < GAME_CONFIG.ROW; row++) {
@@ -54,6 +57,18 @@ cc.Class({
             y -= this.newBlock.height + GAME_CONFIG.MARGIN;
             x = this.mainGame.width / -2 + GAME_CONFIG.MARGIN;
         };
+    },
+    onKeyDown: function onKeyDown(event) {
+        this._isChange = false;
+        switch (event.keyCode) {
+            case 37:
+            case 39:
+                this.checkLeftRight(event.keyCode);
+                break;
+            case 38:
+            case 40:
+                this.checkUpDown(event.keyCode);
+        }
     },
     slideLeftOrUp: function slideLeftOrUp(array) {
         var newArray = [];
@@ -99,11 +114,13 @@ cc.Class({
             }
         }
     },
+    checkLose: function checkLose() {},
     checkWin: function checkWin() {
         for (var row = 0; row < GAME_CONFIG.ROW; row++) {
             for (var col = 0; col < GAME_CONFIG.COL; col++) {
                 if (ARR_BLOCK[row][col] === 2048) {
                     this.winGame.active = true;
+                    return;
                 }
             }
         }
@@ -119,56 +136,66 @@ cc.Class({
             }
         }
     },
-    clickRestart: function clickRestart() {},
-    checkLeft: function checkLeft() {
+    clickRestart: function clickRestart() {
+        ARR_BLOCK = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]];
+        this.initObj();
+    },
+    checkLeftRight: function checkLeftRight(keyCode) {
         for (var row = 0; row < GAME_CONFIG.ROW; row++) {
             var arr = ARR_BLOCK[row];
-            ARR_BLOCK[row] = this.slideLeftOrUp(ARR_BLOCK[row]);
-            for (var col = 0; col < GAME_CONFIG.COL - 1; col++) {
-                if (ARR_BLOCK[row][col] == ARR_BLOCK[row][col + 1]) {
-                    ARR_BLOCK[row][col] += ARR_BLOCK[row][col + 1];
-                    ARR_BLOCK[row][col + 1] = 0;
+            if (keyCode === 37) {
+                ARR_BLOCK[row] = this.slideLeftOrUp(ARR_BLOCK[row]);
+                for (var col = 0; col < GAME_CONFIG.COL - 1; col++) {
+                    if (ARR_BLOCK[row][col] == ARR_BLOCK[row][col + 1]) {
+                        ARR_BLOCK[row][col] += ARR_BLOCK[row][col + 1];
+                        ARR_BLOCK[row][col + 1] = 0;
+                    }
                 }
+                ARR_BLOCK[row] = this.slideLeftOrUp(ARR_BLOCK[row]);
             }
-            ARR_BLOCK[row] = this.slideLeftOrUp(ARR_BLOCK[row]);
+            if (keyCode === 39) {
+                ARR_BLOCK[row] = this.slideRightOrDown(ARR_BLOCK[row]);
+                for (var _col = 3; _col > 0; _col--) {
+                    if (ARR_BLOCK[row][_col] == ARR_BLOCK[row][_col - 1]) {
+                        ARR_BLOCK[row][_col] += ARR_BLOCK[row][_col - 1];
+                        ARR_BLOCK[row][_col - 1] = 0;
+                    }
+                }
+                ARR_BLOCK[row] = this.slideRightOrDown(ARR_BLOCK[row]);
+            }
             this.hasChangeArray(arr, ARR_BLOCK[row]);
         }
         if (this._isChange) {
             this.addNum();
         }
     },
-    checkRight: function checkRight() {
-        for (var row = 0; row < GAME_CONFIG.ROW; row++) {
-            var arr = ARR_BLOCK[row];
-            ARR_BLOCK[row] = this.slideRightOrDown(ARR_BLOCK[row]);
-            for (var col = 3; col > 0; col--) {
-                if (ARR_BLOCK[row][col] == ARR_BLOCK[row][col - 1]) {
-                    ARR_BLOCK[row][col] += ARR_BLOCK[row][col - 1];
-                    ARR_BLOCK[row][col - 1] = 0;
-                }
-            }
-            ARR_BLOCK[row] = this.slideRightOrDown(ARR_BLOCK[row]);
-            this.hasChangeArray(arr, ARR_BLOCK[row]);
-        }
-        if (this._isChange) {
-            this.addNum();
-        }
-    },
-    checkUp: function checkUp() {
+    checkUpDown: function checkUpDown(keyCode) {
         for (var row = 0; row < GAME_CONFIG.ROW; row++) {
             var newArr = [];
             for (var col = 0; col < GAME_CONFIG.COL; col++) {
                 newArr.push(ARR_BLOCK[col][row]);
             }
             var arr = newArr;
-            newArr = this.slideLeftOrUp(newArr);
-            for (var m = 0; m < 3; m++) {
-                if (newArr[m] == newArr[m + 1]) {
-                    newArr[m] += newArr[m + 1];
-                    newArr[m + 1] = 0;
+            if (keyCode === 38) {
+                newArr = this.slideLeftOrUp(newArr);
+                for (var m = 0; m < 3; m++) {
+                    if (newArr[m] == newArr[m + 1]) {
+                        newArr[m] += newArr[m + 1];
+                        newArr[m + 1] = 0;
+                    }
                 }
+                newArr = this.slideLeftOrUp(newArr);
             }
-            newArr = this.slideLeftOrUp(newArr);
+            if (keyCode === 40) {
+                newArr = this.slideRightOrDown(newArr);
+                for (var _m = 3; _m > 0; _m--) {
+                    if (newArr[_m] == newArr[_m - 1]) {
+                        newArr[_m] += newArr[_m - 1];
+                        newArr[_m - 1] = 0;
+                    }
+                }
+                newArr = this.slideRightOrDown(newArr);
+            }
             for (var i = 0; i < 4; i++) {
                 ARR_BLOCK[i][row] = newArr[i];
             }
@@ -176,50 +203,11 @@ cc.Class({
         }
         if (this._isChange) {
             this.addNum();
-        }
-    },
-    checkDown: function checkDown() {
-        for (var row = 0; row < GAME_CONFIG.ROW; row++) {
-            var newArr = [];
-            for (var col = 0; col < GAME_CONFIG.COL; col++) {
-                newArr.push(ARR_BLOCK[col][row]);
-            }
-            var arr = newArr;
-            newArr = this.slideRightOrDown(newArr);
-            for (var m = 3; m > 0; m--) {
-                if (newArr[m] == newArr[m - 1]) {
-                    newArr[m] += newArr[m - 1];
-                    newArr[m - 1] = 0;
-                }
-            }
-            newArr = this.slideRightOrDown(newArr);
-            for (var i = 0; i < 4; i++) {
-                ARR_BLOCK[i][row] = newArr[i];
-            }
-            this.hasChangeArray(arr, newArr);
-        }
-        if (this._isChange) {
-            this.addNum();
-        }
-    },
-    onKeyDown: function onKeyDown(event) {
-        this._isChange = false;
-        switch (event.keyCode) {
-            case 37:
-                this.checkLeft();
-                break;
-            case 39:
-                this.checkRight();
-                break;
-            case 38:
-                this.checkUp();
-                break;
-            case 40:
-                this.checkDown();
         }
     },
     update: function update() {
         this.checkWin();
+        this.checkLose();
     }
 });
 

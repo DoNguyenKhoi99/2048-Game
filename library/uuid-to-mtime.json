@@ -420,48 +420,43 @@
     "relativePath": "model/primitives.fbx"
   },
   "d643f8c3-895a-4243-813c-c36c56235a1e": {
-    "asset": 1622548392529,
+    "asset": 1622601686412,
     "meta": 1622429409604,
     "relativePath": "Prefabs"
   },
   "efc3fec6-35f8-4411-8f85-6734d1f2595a": {
-    "asset": 1622548238816,
+    "asset": 1622601969128,
     "meta": 1622429409604,
     "relativePath": "Scripts"
   },
   "b29c01d9-5fb7-4030-b627-32304e09fe25": {
-    "asset": 1622600635674,
-    "meta": 1622600635683,
+    "asset": 1622612805841,
+    "meta": 1622612805851,
     "relativePath": "GamePlay.fire"
   },
   "190632b0-246f-48b7-8484-faba03d28eb4": {
-    "asset": 1622600708373,
-    "meta": 1622600708379,
+    "asset": 1622601686412,
+    "meta": 1622601693004,
     "relativePath": "Prefabs/Block.prefab"
   },
-  "e74a8138-1c3e-4af7-b0ff-f5de883aadec": {
-    "asset": 1622552194258,
-    "meta": 1622552315312,
-    "relativePath": "Scripts/BlockController.js"
-  },
-  "a3fa0e03-5da8-4169-8f04-9ed689ab5680": {
-    "asset": 1622553385533,
-    "meta": 1622553396287,
-    "relativePath": "Scripts/Colors.js"
-  },
   "36696897-2219-48e8-8e9b-4f91ccdc2066": {
-    "asset": 1622600278114,
-    "meta": 1622600278115,
+    "asset": 1622601686414,
+    "meta": 1622601686413,
     "relativePath": "image"
   },
   "12b50699-0fb7-4cba-beca-8da6e335eb7b": {
-    "asset": 1622600286667,
-    "meta": 1622600286701,
+    "asset": 1622601686414,
+    "meta": 1622601693190,
     "relativePath": "image/unnamed.png"
   },
+  "e74a8138-1c3e-4af7-b0ff-f5de883aadec": {
+    "asset": 1622603217430,
+    "meta": 1622604273455,
+    "relativePath": "Scripts/BlockController.js"
+  },
   "016ac3d7-e207-4c63-b500-1a412c061854": {
-    "asset": 1622601450800,
-    "meta": 1622601455840,
+    "asset": 1622612772827,
+    "meta": 1622612805461,
     "relativePath": "Scripts/GameManagaer.js"
   }
 }
