@@ -21,6 +21,8 @@ cc.Class({
         score: cc.Label,
         recored: cc.Label,
         loseLayout: cc.Node,
+        winGame: cc.Node,
+        loseGame: cc.Node,
         _isChange: false
     },
 
@@ -37,7 +39,6 @@ cc.Class({
     initBlock: function initBlock() {
         var y = this.mainGame.height / 2 - GAME_CONFIG.MARGIN,
             x = this.mainGame.width / -2 + GAME_CONFIG.MARGIN;
-        var index = 0;
         for (var row = 0; row < GAME_CONFIG.ROW; row++) {
             for (var col = 0; col < GAME_CONFIG.COL; col++) {
                 this.newBlock = cc.instantiate(this.block);
@@ -75,6 +76,7 @@ cc.Class({
         return newArray;
     },
     addNum: function addNum() {
+        this.updateScore();
         var newArr = [];
         for (var row = 0; row < GAME_CONFIG.ROW; row++) {
             for (var col = 0; col < GAME_CONFIG.COL; col++) {
@@ -97,6 +99,27 @@ cc.Class({
             }
         }
     },
+    checkWin: function checkWin() {
+        for (var row = 0; row < GAME_CONFIG.ROW; row++) {
+            for (var col = 0; col < GAME_CONFIG.COL; col++) {
+                if (ARR_BLOCK[row][col] === 2048) {
+                    this.winGame.active = true;
+                }
+            }
+        }
+    },
+    updateScore: function updateScore() {
+        var total = 0;
+        for (var row = 0; row < GAME_CONFIG.ROW; row++) {
+            for (var col = 0; col < GAME_CONFIG.COL; col++) {
+                if (ARR_BLOCK[row][col] > 2) {
+                    total += ARR_BLOCK[row][col];
+                    this.score.string = total;
+                }
+            }
+        }
+    },
+    clickRestart: function clickRestart() {},
     checkLeft: function checkLeft() {
         for (var row = 0; row < GAME_CONFIG.ROW; row++) {
             var arr = ARR_BLOCK[row];
@@ -113,7 +136,6 @@ cc.Class({
         if (this._isChange) {
             this.addNum();
         }
-        this.initBlock();
     },
     checkRight: function checkRight() {
         for (var row = 0; row < GAME_CONFIG.ROW; row++) {
@@ -131,7 +153,6 @@ cc.Class({
         if (this._isChange) {
             this.addNum();
         }
-        this.initBlock();
     },
     checkUp: function checkUp() {
         for (var row = 0; row < GAME_CONFIG.ROW; row++) {
@@ -156,7 +177,6 @@ cc.Class({
         if (this._isChange) {
             this.addNum();
         }
-        this.initBlock();
     },
     checkDown: function checkDown() {
         for (var row = 0; row < GAME_CONFIG.ROW; row++) {
@@ -181,7 +201,6 @@ cc.Class({
         if (this._isChange) {
             this.addNum();
         }
-        this.initBlock();
     },
     onKeyDown: function onKeyDown(event) {
         this._isChange = false;
@@ -198,6 +217,9 @@ cc.Class({
             case 40:
                 this.checkDown();
         }
+    },
+    update: function update() {
+        this.checkWin();
     }
 });
 

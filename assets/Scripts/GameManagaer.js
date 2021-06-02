@@ -21,6 +21,8 @@ cc.Class({
         score: cc.Label,
         recored: cc.Label,
         loseLayout: cc.Node, 
+        winGame: cc.Node,
+        loseGame: cc.Node,
         _isChange: false
     },
 
@@ -39,7 +41,6 @@ cc.Class({
     initBlock() {
         let y = this.mainGame.height / 2 - GAME_CONFIG.MARGIN,
             x = this.mainGame.width / -2 + GAME_CONFIG.MARGIN;
-        let index = 0;    
         for(let row = 0; row < GAME_CONFIG.ROW; row++) {
             for(let col = 0; col < GAME_CONFIG.COL; col++) {
                 this.newBlock = cc.instantiate(this.block); 
@@ -80,6 +81,7 @@ cc.Class({
     },
 
     addNum() {
+        this.updateScore();
         let newArr = [];
         for(let row = 0; row < GAME_CONFIG.ROW; row++) {
             for(let col = 0; col < GAME_CONFIG.COL; col++) { 
@@ -104,6 +106,32 @@ cc.Class({
         }
     },
 
+    checkWin() {
+        for(let row = 0; row < GAME_CONFIG.ROW; row++) {
+            for(let col =0; col < GAME_CONFIG.COL; col++) {
+                if(ARR_BLOCK[row][col] === 2048) {
+                    this.winGame.active = true;
+                }
+            }
+        }
+    },
+
+    updateScore() {
+        let total = 0;
+        for(let row = 0; row < GAME_CONFIG.ROW; row++) {
+            for(let col = 0; col < GAME_CONFIG.COL; col++) {
+                if(ARR_BLOCK[row][col] > 2) {
+                    total += ARR_BLOCK[row][col];
+                    this.score.string = total;
+                }
+            }
+        }
+    },
+
+    clickRestart() {
+
+    },
+
     checkLeft() {
         for(let row = 0; row < GAME_CONFIG.ROW; row++) {
             let arr = ARR_BLOCK[row];
@@ -120,7 +148,6 @@ cc.Class({
         if(this._isChange) {
             this.addNum();
         }
-        this.initBlock();
     },
 
     checkRight() {
@@ -139,7 +166,6 @@ cc.Class({
         if(this._isChange) {
             this.addNum();
         }
-        this.initBlock();
     },
 
     checkUp() {
@@ -165,7 +191,6 @@ cc.Class({
         if(this._isChange) {
             this.addNum();
         }
-        this.initBlock();
     },
 
     checkDown() {
@@ -191,7 +216,6 @@ cc.Class({
         if(this._isChange) {
             this.addNum();
         }
-        this.initBlock();
     },
 
     onKeyDown(event) {
@@ -209,5 +233,9 @@ cc.Class({
             case 40:
                 this.checkDown();
         }
+    },
+
+    update() {
+        this.checkWin();
     },
 });
