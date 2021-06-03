@@ -12,6 +12,15 @@ var GAME_CONFIG = {
 
 var ARR_BLOCK = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]];
 
+var DIRECTION = cc.Enum({
+    RIGHT: -1,
+    LEFT: -1,
+    UP: -1,
+    DOWN: -1
+});
+
+var MIN_LENGTH = 10;
+
 cc.Class({
     extends: cc.Component,
 
@@ -26,8 +35,9 @@ cc.Class({
     },
 
     onLoad: function onLoad() {
-        cc.systemEvent.on(cc.SystemEvent.EventType.KEY_DOWN, this.onKeyDown, this);
+        //cc.systemEvent.on(cc.SystemEvent.EventType.KEY_DOWN, this.onKeyDown, this);
         this.initObj();
+        this.eventHandler();
     },
     initObj: function initObj() {
         this.loseGame.active = false;
@@ -68,6 +78,83 @@ cc.Class({
             case 38:
             case 40:
                 this.checkUpDown(event.keyCode);
+        }
+    },
+    eventHandler: function eventHandler() {
+        var _this = this;
+
+        cc.systemEvent.on(cc.SystemEvent.EventType.KEY_DOWN, this.onKeyDown, this);
+
+        if (cc.sys.isMobile) {
+            this.mainGame.on("touchstart", function (event) {
+                _this._startPoint = event.getLocation();
+            });
+            this.mainGame.on("touchend", function (event) {
+                _this._endPoint = event.getLocation();
+                _this.reflectTouch();
+            });
+            this.mainGame.on("touchcancel", function (event) {
+                _this._endPoint = event.getLocation();
+                _this.reflectTouch();
+            });
+        }
+        if (cc.sys.IPAD || cc.sys.DESKTOP_BROWSER) {
+            this.mainGame.on("mousedown", function (event) {
+                _this._isCLick = false;
+                _this._startPoint = event.getLocation();
+                _this._firstX = _this._startPoint.x;
+                _this._firstY = _this._startPoint.y;
+            });
+            this.mainGame.on("mouseup", function (event) {
+                _this._isCLick = true;
+                _this._endPoint = event.getLocation();
+                _this._endX = _this._startPoint.x - _this._endPoint.x;
+                _this._endY = _this._startPoint.y - _this._endPoint.y;
+                _this._vector = cc.v2(_this._endX, _this._endY);
+                _this.mouseEvent();
+            });
+        }
+    },
+    reflectTouch: function reflectTouch() {
+        var startVec = this._startPoint;
+        var endVec = this._endPoint;
+        var pointsVec = endVec.sub(startVec);
+        var vecLength = pointsVec.mag();
+        if (vecLength > MIN_LENGTH) {
+            if (Math.abs(pointsVec.x) > Math.abs(pointsVec.y)) {
+                if (pointsVec.x > 0) this.touchEvent(DIRECTION.RIGHT);else this.touchEvent(DIRECTION.LEFT);
+            } else {
+                if (pointsVec.y > 0) this.touchEvent(DIRECTION.UP);else this.touchEvent(DIRECTION.DOWN);
+            }
+        }
+    },
+    touchEvent: function touchEvent(direction) {
+        switch (direction) {
+            case DIRECTION.RIGHT:
+            case DIRECTION.LEFT:
+                this.checkLeftRight(direction);
+                break;
+            case DIRECTION.UP:
+            case DIRECTION.DOWN:
+                this.checkUpDown(direction);
+                break;
+
+        }
+    },
+    mouseEvent: function mouseEvent() {
+        if (this._vector.mag() > MIN_LENGTH) {
+            if (this._canMove) {
+                this._canMove = false;
+                if (this._vector.x < 0 && this._vector.y < 50 && this._vector.y > -50) {
+                    this.blockMoveRight();
+                } else if (this._vector.x > 0 && this._vector.y < 50 && this._vector.y > -50) {
+                    this.blockMoveLeft();
+                } else if (this._vector.y < 0 && this._vector.x < 50 && this._vector.x > -50) {
+                    this.blockMoveUp();
+                } else if (this._vector.y > 0 && this._vector.x < 50 && this._vector.x > -50) {
+                    this.blockMoveDown();
+                }
+            }
         }
     },
     slideLeftOrUp: function slideLeftOrUp(array) {
@@ -114,7 +201,19 @@ cc.Class({
             }
         }
     },
-    checkLose: function checkLose() {},
+    checkLose: function checkLose() {
+        for (var row = 0; row < GAME_CONFIG.ROW; row++) {
+            for (var col = 0; col < GAME_CONFIG.COL; col++) {
+                var block = ARR_BLOCK[row][col];
+                if (block === 0) return false;
+                if (col > 0 && ARR_BLOCK[row][col - 1] == block) return false;
+                if (col < GAME_CONFIG.ROW - 1 && ARR_BLOCK[row][col + 1] == block) return false;
+                if (row > 0 && ARR_BLOCK[row - 1][col] == block) return false;
+                if (row < GAME_CONFIG.ROW - 1 && ARR_BLOCK[row + 1][col] == block) return false;
+            }
+        }
+        return true;
+    },
     checkWin: function checkWin() {
         for (var row = 0; row < GAME_CONFIG.ROW; row++) {
             for (var col = 0; col < GAME_CONFIG.COL; col++) {
@@ -140,10 +239,10 @@ cc.Class({
         ARR_BLOCK = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]];
         this.initObj();
     },
-    checkLeftRight: function checkLeftRight(keyCode) {
+    checkLeftRight: function checkLeftRight(value) {
         for (var row = 0; row < GAME_CONFIG.ROW; row++) {
             var arr = ARR_BLOCK[row];
-            if (keyCode === 37) {
+            if (value === 37 || value === 1) {
                 ARR_BLOCK[row] = this.slideLeftOrUp(ARR_BLOCK[row]);
                 for (var col = 0; col < GAME_CONFIG.COL - 1; col++) {
                     if (ARR_BLOCK[row][col] == ARR_BLOCK[row][col + 1]) {
@@ -153,7 +252,7 @@ cc.Class({
                 }
                 ARR_BLOCK[row] = this.slideLeftOrUp(ARR_BLOCK[row]);
             }
-            if (keyCode === 39) {
+            if (value === 39 || value === 0) {
                 ARR_BLOCK[row] = this.slideRightOrDown(ARR_BLOCK[row]);
                 for (var _col = 3; _col > 0; _col--) {
                     if (ARR_BLOCK[row][_col] == ARR_BLOCK[row][_col - 1]) {
@@ -169,14 +268,14 @@ cc.Class({
             this.addNum();
         }
     },
-    checkUpDown: function checkUpDown(keyCode) {
+    checkUpDown: function checkUpDown(value) {
         for (var row = 0; row < GAME_CONFIG.ROW; row++) {
             var newArr = [];
             for (var col = 0; col < GAME_CONFIG.COL; col++) {
                 newArr.push(ARR_BLOCK[col][row]);
             }
             var arr = newArr;
-            if (keyCode === 38) {
+            if (value === 38 || value === 2) {
                 newArr = this.slideLeftOrUp(newArr);
                 for (var m = 0; m < 3; m++) {
                     if (newArr[m] == newArr[m + 1]) {
@@ -186,7 +285,7 @@ cc.Class({
                 }
                 newArr = this.slideLeftOrUp(newArr);
             }
-            if (keyCode === 40) {
+            if (value === 40 || value === 3) {
                 newArr = this.slideRightOrDown(newArr);
                 for (var _m = 3; _m > 0; _m--) {
                     if (newArr[_m] == newArr[_m - 1]) {
@@ -207,7 +306,9 @@ cc.Class({
     },
     update: function update() {
         this.checkWin();
-        this.checkLose();
+        if (this.checkLose()) {
+            this.loseGame.active = true;
+        };
     }
 });
 
